@@ -5,6 +5,7 @@ import (
 	"github.com/go-martini/martini"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
+	"github.com/martini-contrib/binding"
 	"github.com/martini-contrib/render"
 )
 
@@ -34,11 +35,25 @@ func main() {
 			Items []Item
 		}
 
-		//db.Find is a basic gorm command, 
+		//db.Find is a basic gorm command,
 		//it’s simply going to run SELECT * FROM items
 		db.Find(&retData.Items)
 		r.HTML(200, "index", retData)
 
 	})
+
+	m.Get("/item/add", func(r render.Render) {
+		var retData struct {
+			Item Item
+		}
+
+		r.HTML(200, "item_edit", retData)
+	})
+
+	m.Post("/item/save", binding.Bind(Item{}), func(r render.Render, i Item) {
+		db.Save(&i)
+		r.Redirect("/")
+	})
+
 	m.Run()
 }
