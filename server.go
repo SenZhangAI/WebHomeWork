@@ -55,5 +55,23 @@ func main() {
 		r.Redirect("/")
 	})
 
+    m.Get("/item/edit/:id", func(r render.Render, p martini.Params) {
+        var retData struct {
+            Item Item
+        }
+
+        db.Where("id = ?", p["id"]).Find(&retData.Item)
+
+        r.HTML(200, "item_edit", retData)
+    })
+
+    m.Get("/item/remove/:id", func(r render.Render, p martini.Params) {
+        //为了让如上的Where语句知道是什么表而造的空结构
+        var item Item
+        db.Where("id = ?", p["id"]).Delete(&item)
+
+        r.Redirect("/")
+    })
+
 	m.Run()
 }

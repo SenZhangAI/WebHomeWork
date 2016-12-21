@@ -11,6 +11,7 @@
         <h3>{{ .Title }}</h3>
         <p>{{ .Description }}</p>
         <p>By: {{ .UserName }}</p>
+        <p><a href="/item/edit/{{ .Id }}">Edit</a> | <a href="/item/remove/{{ .Id }}">Remove</a></p>
     {{ else }}
         <p>No items found!</p>
     {{ end }}
