@@ -1,14 +1,19 @@
 package main
 
 import (
-	"time"
-
 	"github.com/gin-gonic/gin"
+	"net/http"
+	"time"
 )
 
-func index(c *gin.Context) {
-	c.HTML(200, "index.templ.html", gin.H{
-		"testHeader": "test",
-		"timestamp":  time.Now().Unix(),
+func login(c *gin.Context) {
+	c.HTML(http.StatusOK, "login.templ.html", gin.H{
+		"timestamp": time.Now().Unix(),
+	})
+}
+
+func userJoin(c *gin.Context) {
+	c.HTML(http.StatusOK, "user_join.templ.html", gin.H{
+		"timestamp": time.Now().Unix(),
 	})
 }
