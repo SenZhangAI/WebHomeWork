@@ -19,20 +19,30 @@
   </head>
 
   <body>
-  <div id="showjson"></div>
+
     <div class="container">
-
-
+      <div id="showjson"></div>
+      <table id="table-style" class="table" data-show-header="false">
+        <thead>
+          <tr>
+            <th data-field="ID" class="col-md-2">ID</th>
+            <th data-field="Name" class="col-md-8">用户名</th>
+            <th data-field="Nick" class="col-md-8">昵称</th>
+          </tr>
+        </thead>
+        <tbody id="chat"></tbody>
+      </table>
 
     </div> <!-- /container -->
 
-<script type="text/javascript">
+    <script type="text/javascript">
 $.getJSON("http://127.0.0.1:8080/api/v1/users",
-  function(req) {
-    $.each(req.Users, function(i, user) {
-            $("<p>" + user.ID +  user.UserName + user.UserNick + "</p>").appendTo("#showjson");
+    function(req) {
+      $.each(req.Users, function(i, user) {
+        var html = "<tr class=\"user_"+user.ID+"\"><td>"+user.ID+"</td><td>"+user.UserName+"</td><td>"+user.UserNick+"</td></tr>";
+        $('#chat').append(html);
+      });
     });
-});
-</script>
+    </script>
 
   </body></html>
