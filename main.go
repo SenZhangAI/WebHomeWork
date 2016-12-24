@@ -28,6 +28,7 @@ func StartGin() {
 	router.GET("/", login)
 	router.GET("/user/login", login)
 	router.GET("/user/join", userJoin)
+	router.GET("/users", usersList)
 
 	//RESTful API
 	router.GET("/api", getAPI)

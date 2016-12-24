@@ -17,3 +17,9 @@ func userJoin(c *gin.Context) {
 		"timestamp": time.Now().Unix(),
 	})
 }
+
+func usersList(c *gin.Context) {
+	c.HTML(http.StatusOK, "user_list.templ.html", gin.H{
+		"timestamp": time.Now().Unix(),
+	})
+}
