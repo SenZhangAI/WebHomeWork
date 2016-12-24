@@ -19,7 +19,7 @@ const (
 func getAPI(c *gin.Context) {
 	api_v1 := gin.H{
 		"get_api  ": "GET  " + API_HOST,
-		"get_user ": "GET  " + API_HOST_V1 + "/user",
+		"get_users": "GET  " + API_HOST_V1 + "/users",
 		"post_user": "POST " + API_HOST_V1 + "/user",
 	}
 
@@ -31,7 +31,30 @@ func postUser(c *gin.Context) {
 
 	if c.Bind(&user) == nil {
 		db.Save(&user)
+		c.Redirect(http.StatusMovedPermanently, "/user/login")
+	} else {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{
+			"status":  http.StatusBadRequest,
+			"message": "Bad Request",
+			"usage": "curl -i -d " +
+				"\"user_name=XXX&user_nick=XXX&user_password=XXX\"" +
+				API_HOST_V1 + "/user",
+		})
+	}
+}
+
+func getUsers(c *gin.Context) {
+	type User struct {
+		ID       int32
+		UserName string
+		UserNick string
 	}
 
-	c.Redirect(http.StatusMovedPermanently, "/user/login")
+	var retData struct {
+		Users []User
+	}
+
+	db.Select("id, user_name, user_nick").Find(&retData.Users)
+
+	c.IndentedJSON(http.StatusOK, retData)
 }

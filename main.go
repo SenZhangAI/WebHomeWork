@@ -32,7 +32,7 @@ func StartGin() {
 	//RESTful API
 	router.GET("/api", getAPI)
 	router.POST("/api/v1/user", postUser)
-	//router.GET("/api/v1/user", getUser)
+	router.GET("/api/v1/users", getUsers)
 
 	router.Run(":8080")
 }
