@@ -11,11 +11,23 @@ import (
 	aserver "gopkg.in/oauth2.v3/server"
 	"gopkg.in/oauth2.v3/store"
 	"net/http"
+
+	"golang.org/x/oauth2"
 )
 
 var (
 	db            *gorm.DB
 	sqlConnection string
+
+	config = oauth2.Config{
+		ClientID:     "000000",
+		ClientSecret: "999999",
+		Scopes:       []string{"all"},
+		RedirectURL:  "",
+		Endpoint: oauth2.Endpoint{
+			TokenURL: "http://localhost:8080/oauth2/token",
+		},
+	}
 )
 
 func main() {
@@ -35,13 +47,14 @@ func StartGin() {
 
 	router.GET("/", login)
 	router.GET("/user/login", login)
+	router.POST("/user/login", postLogin)
 	router.GET("/user/join", userJoin)
 	router.GET("/users", usersList)
 
 	//Oauth
 	auth := router.Group("/oauth2")
 	{
-		auth.GET("/token", server.HandleTokenRequest)
+		auth.GET("/token", tokenHandler)
 	}
 
 	//RESTful API
@@ -107,8 +120,38 @@ func OauthInit() {
 
 }
 
+func tokenHandler(c *gin.Context) {
+	server.HandleTokenRequest(c)
+	return
+}
+
 func passwordAuthHandler(username, password string) (userID string, err error) {
 	//TODO 对比用户名密码
 	userID = "test"
 	return
+}
+
+func postLogin(c *gin.Context) {
+	type User struct {
+		UserName string `form:"user_name" json:"user_name" binding:"required"`
+		Password string `form:"user_password" json:"user_password" binding:"required"`
+	}
+	var user User
+
+	if c.Bind(&user) != nil {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{
+			"status":  http.StatusBadRequest,
+			"message": "Bad Request",
+			"usage": "curl -i -d " +
+				"\"user_name=XXX&user_password=XXX\"" +
+				API_HOST_V1 + "/user/login",
+		})
+	}
+
+	token, err := config.PasswordCredentialsToken(c, user.UserName, user.Password)
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+	}
+
+	c.IndentedJSON(http.StatusOK, token)
 }
